@@ -1,16 +1,17 @@
 {
-  "name": "rentok-task",
+  "name": "rentok-llm-gateway",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
+  "description": "Budget-aware LLM API gateway for the RentOk take-home assignment",
+  "type": "module",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
+    "dev": "nodemon src/server.js",
+    "test": "node --test",
+    "db:migrate": "prisma migrate deploy",
+    "db:studio": "prisma studio",
+    "prisma:generate": "prisma generate"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "module",
   "dependencies": {
     "@prisma/client": "^6.19.3",
     "cors": "^2.8.6",
