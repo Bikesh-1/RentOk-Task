@@ -1,8 +1,11 @@
-import openai from "../config/openai.js";
+import { getOpenAIClient } from "../config/openai.js";
 
 const callOpenAI = async ({ model, messages, maxTokens, temperature }) => {
+  const openai = getOpenAIClient();
   if (!openai) throw new Error("OPENAI_API_KEY is not configured");
-  const response = await openai.chat.completions.create({ model, messages, max_tokens: maxTokens, temperature });
+  const response = await openai.chat.completions.create({
+    model, messages, max_tokens: maxTokens, temperature
+  });
   return {
     provider: "openai", model: response.model || model,
     content: response.choices?.[0]?.message?.content ?? "",
