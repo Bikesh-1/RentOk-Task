@@ -1,109 +1,76 @@
 # RentOk LLM Gateway
 
-A minimal backend gateway between client applications and LLM providers, built incrementally for the RentOk Backend Intern take-home assignment.
+A backend HTTP gateway that provides virtual API keys, budget enforcement, usage accounting, and a unified chat-completions endpoint.
 
-## Current implementation
+## Stack
+Node.js, Express, PostgreSQL, Prisma 6, OpenAI SDK. Optional Gemini fallback uses the provider REST API.
 
-- Express server and health endpoint
-- PostgreSQL integration with Prisma 6
-- Virtual API key generation using Node.js cryptographic randomness
-- SHA-256 hashing; only the key hash is persisted
-- Admin-secret protection for virtual key creation
-- Bearer-token authentication for gateway-issued keys
-- Temporary authentication verification endpoint
+## Features
+- Secure `gw_` virtual key generation; only SHA-256 hashes are stored.
+- Admin-protected key creation and listing.
+- Bearer authentication for gateway keys.
+- Atomic budget reservation to avoid concurrent overspending.
+- OpenAI chat-completions proxy with optional Gemini fallback.
+- Token/cost accounting and persisted usage logs.
+- Admin-protected usage reports.
 
-## Tech stack
-
-- Node.js (ES Modules)
-- Express
-- PostgreSQL
-- Prisma 6
-- OpenAI SDK (provider integration is planned)
-
-## Requirements
-
-- Node.js
-- PostgreSQL database (Neon is supported)
-- OpenAI API key for the provider integration stage
-
-## Local setup
-
-1. Install dependencies:
-
+## Setup
+1. Install Node.js and create a PostgreSQL database (Neon is supported).
+2. Install packages: `npm install`.
+3. Copy `.env.example` to `.env` (PowerShell: `Copy-Item .env.example .env`).
+4. Set `DATABASE_URL`, `ADMIN_API_KEY`, and `OPENAI_API_KEY`. Optionally set `GEMINI_API_KEY`.
+5. Apply migrations and generate Prisma Client:
    ```bash
-   npm install
-   ```
-
-2. Copy the environment template:
-
-   PowerShell:
-   ```powershell
-   Copy-Item .env.example .env
-   ```
-
-3. Set `DATABASE_URL`, `ADMIN_API_KEY`, and (when implementing provider calls) `OPENAI_API_KEY` in `.env`.
-
-4. Apply the Prisma migration and generate the client:
-
-   ```bash
-   npx prisma migrate dev
+   npx prisma migrate deploy
    npx prisma generate
    ```
+   For a new development database, use `npx prisma migrate dev`.
+6. Start: `npm run dev`.
 
-5. Start the development server:
+## Environment
+See `.env.example`. Pricing variables are USD per 1M tokens and must be configured to match current provider/model prices. Defaults are illustrative.
 
-   ```bash
-   npm run dev
-   ```
+## API
 
-6. Check `GET http://localhost:5000/health`.
-
-## Available endpoints
-
-### Health check
-
+### Health
 `GET /health`
 
-### Create a virtual API key
-
+### Create key (admin)
 `POST /api/keys`
-
-Required header:
-
-```http
-x-admin-key: <ADMIN_API_KEY>
+Header: `x-admin-key: <ADMIN_API_KEY>`
+Body:
+```json
+{ "name": "My app", "budgetLimit": 5 }
 ```
+Save the returned `apiKey`; it is only shown once.
 
-JSON body:
+### List keys (admin)
+`GET /api/keys`
+Header: `x-admin-key: <ADMIN_API_KEY>`
 
+### Chat completion
+`POST /v1/chat/completions`
+Header: `Authorization: Bearer <VIRTUAL_API_KEY>`
+Body:
 ```json
 {
-  "name": "Development key",
-  "budgetLimit": 10
+  "model": "gpt-4o-mini",
+  "messages": [{ "role": "user", "content": "Hello!" }],
+  "max_tokens": 256,
+  "temperature": 0.7
 }
 ```
+The response follows the common non-streaming chat-completion shape and adds `gateway.provider` and `gateway.cost_usd`.
 
-The original key is returned once at creation. The database stores only its SHA-256 hash.
+### Usage reports (admin)
+- `GET /api/usage` (optional `?keyId=<id>`)
+- `GET /api/usage/:keyId`
 
-### Temporary authentication test
+## Budget behavior
+Before a provider call, the gateway estimates a conservative maximum request cost and atomically reserves it. On success it releases the reservation, records provider-reported token usage, and adds actual cost. On failure it releases the reservation and records a failed usage log. If the reservation would exceed the key budget, the gateway returns HTTP 402.
 
-`GET /api/test-auth`
+## Security notes
+Never commit `.env` or real credentials. Rotate credentials exposed in chat/screenshots. The admin secret is a simple shared-secret mechanism intended for this assignment, not a full identity system.
 
-Required header:
-
-```http
-Authorization: Bearer <VIRTUAL_API_KEY>
-```
-
-This endpoint is for development verification and should be removed or disabled before production.
-
-## Security
-
-- Never commit `.env`, provider credentials, database passwords, admin secrets, or generated virtual API keys.
-- Commit only `.env.example` with blank placeholders.
-- Rotate any credential that has been exposed.
-- The current admin-secret mechanism is a minimal take-home implementation, not a full admin identity system.
-
-## Remaining assignment work
-
-Budget reservation and settlement, LLM proxying, usage/spend logging, resilience/fallback, deployment, and the required `DECISIONS.md` and `AI-LOG.md` still need to be implemented and tested. This README describes the current checkpoint, not a completed gateway.
+## Known limitations
+Non-streaming text chat only; basic Gemini fallback; approximate pre-call token estimation; operator-maintained pricing; no distributed rate limiter; reservation counters need crash-recovery reconciliation. See [DECISIONS.md](./DECISIONS.md) and [AI-LOG.md](./AI-LOG.md).

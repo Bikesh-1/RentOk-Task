@@ -1,9 +1,8 @@
 import express from "express";
-import { createApiKey } from "../controllers/keyController.js";
 import adminAuth from "../middleware/adminAuth.js";
-
+import { createApiKey, listApiKeys } from "../controllers/keyController.js";
 const router = express.Router();
-
-router.post("/", adminAuth, createApiKey);
-
+router.use(adminAuth);
+router.post("/", createApiKey);
+router.get("/", listApiKeys);
 export default router;
