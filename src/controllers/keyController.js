@@ -1,15 +1,18 @@
 import prisma from "../config/db.js";
 import { generateApiKey, hashApiKey } from "../utils/apiKey.js";
+import { parsePositiveBudget } from "../utils/validation.js";
 
 export const createApiKey = async (req, res, next) => {
   try {
-    const { name, budgetLimit } = req.body ?? {};
-    const budget = Number(budgetLimit);
+    const { name } = req.body ?? {};
+    // Accept both names for compatibility with API clients and earlier examples.
+    const budgetInput = req.body?.budgetLimit ?? req.body?.budget;
+    const budget = parsePositiveBudget(budgetInput);
+
     if (typeof name !== "string" || !name.trim()) {
       return res.status(400).json({ success: false, message: "Valid key name is required" });
     }
-    if (budgetLimit === null || budgetLimit === undefined || typeof budgetLimit === "boolean" ||
-        !Number.isFinite(budget) || budget <= 0) {
+    if (budget === null) {
       return res.status(400).json({ success: false, message: "Budget limit must be a positive number" });
     }
 
