@@ -409,3 +409,58 @@ footer {
         font-size: 22px
     }
 }
+
+/* Monochrome black-and-white theme */
+:root {
+  --bg: #080808;
+  --panel: #151515;
+  --line: #303030;
+  --text: #f5f5f5;
+  --muted: #a3a3a3;
+  --accent: #ffffff;
+  --green: #e5e5e5;
+  --red: #a3a3a3;
+}
+body {
+  background: radial-gradient(ellipse at 15% 0%, #242424 0, transparent 36%), var(--bg);
+}
+.brand-mark { background: #fff; color: #080808; }
+.intro h1 span { color: #cfcfcf; }
+.intro-chip, .number {
+  color: #e5e5e5;
+  border-color: #555;
+}
+.panel, .stat {
+  background: linear-gradient(145deg, #1b1b1b, #111);
+  border-color: #303030;
+}
+input, textarea {
+  background: #090909;
+  border-color: #404040;
+}
+input:focus, textarea:focus {
+  border-color: #fff;
+  box-shadow: 0 0 0 3px #ffffff20;
+}
+button {
+  background: #fff;
+  color: #080808;
+}
+.secondary {
+  background: #242424;
+  color: #f5f5f5;
+  border-color: #4a4a4a;
+}
+.secret-box, .result {
+  background: #101010;
+  border-color: #555;
+}
+.secret-box code { color: #fff; }
+.pill {
+  background: #303030;
+  color: #fff;
+}
+.pill.failed {
+  background: #242424;
+  color: #bdbdbd;
+}
