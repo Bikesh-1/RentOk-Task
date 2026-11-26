@@ -13,6 +13,8 @@ app.use(cors());
 app.use(express.json({ limit: "1mb" }));
 app.use(morgan("dev"));
 
+app.use(express.static("public"));
+
 app.get("/health", (req, res) => res.status(200).json({
   success: true, message: "RentOk LLM Gateway is running"
 }));
