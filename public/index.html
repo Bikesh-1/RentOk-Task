@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#10131c"><title>RentOk · LLM Gateway</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="/"><span class="brand-mark">R</span><span>rentok<span class="muted"> / gateway</span></span></a><span class="status"><i></i> API console</span></header>
+  <main class="shell">
+    <section class="intro"><div><p class="eyebrow">DEVELOPER CONSOLE</p><h1>Your LLM gateway,<br><span>one simple interface.</span></h1><p class="sub">Create virtual keys, inspect spend and send chat requests through your gateway.</p></div><div class="intro-chip">NON-STREAMING · MULTI-PROVIDER</div></section>
+    <section class="panel auth-panel"><div><h2>Admin connection</h2><p class="hint">Enter the ADMIN_API_KEY configured on your server. It stays in this browser tab only.</p></div><div class="inline-form"><input id="adminKey" type="password" placeholder="Admin API key" autocomplete="off"><button id="connectBtn">Connect</button></div><p id="connection" class="feedback" aria-live="polite">Not connected</p></section>
+    <section class="stats" id="stats">
+      <article class="stat"><span>Total requests</span><strong id="totalRequests">—</strong></article>
+      <article class="stat"><span>Input tokens</span><strong id="inputTokens">—</strong></article>
+      <article class="stat"><span>Output tokens</span><strong id="outputTokens">—</strong></article>
+      <article class="stat"><span>Tracked spend</span><strong id="totalCost">—</strong></article>
+    </section>
+    <div class="columns">
+      <section class="panel"><div class="section-head"><div><p class="eyebrow">ACCESS</p><h2>Create a virtual key</h2></div><span class="number">01</span></div>
+        <form id="createKeyForm" class="stack"><label>Key name<input id="keyName" required maxlength="80" placeholder="e.g. Demo application"></label><label>Budget limit (USD)<input id="keyBudget" type="number" min="0.00000001" step="any" required value="5"></label><button type="submit">Generate virtual key</button></form>
+        <div id="newKey" class="secret-box hidden"></div>
+      </section>
+      <section class="panel"><div class="section-head"><div><p class="eyebrow">OBSERVABILITY</p><h2>Usage overview</h2></div><button id="refreshBtn" class="secondary">Refresh</button></div>
+        <div class="table-wrap"><table><thead><tr><th>Key</th><th>Budget</th><th>Spent</th><th>Status</th></tr></thead><tbody id="keysBody"><tr><td colspan="4" class="empty">Connect with your admin key to load keys.</td></tr></tbody></table></div>
+        <h3 class="subheading">Recent requests</h3><div class="table-wrap"><table><thead><tr><th>Provider / model</th><th>Tokens</th><th>Cost</th><th>Status</th></tr></thead><tbody id="logsBody"><tr><td colspan="4" class="empty">No data loaded.</td></tr></tbody></table></div>
+      </section>
+    </div>
+    <section class="panel playground"><div class="section-head"><div><p class="eyebrow">PLAYGROUND</p><h2>Send a chat completion</h2><p class="hint">Use a generated virtual key. The provider key never leaves your server.</p></div><span class="number">02</span></div>
+      <form id="chatForm" class="stack"><label>Virtual API key<input id="virtualKey" type="password" required placeholder="gw_..." autocomplete="off"></label><label>Prompt<textarea id="prompt" rows="4" required>Explain what an LLM gateway does in two sentences.</textarea></label><div class="inline-form"><label class="grow">Model<input id="model" value="gpt-4o-mini"></label><label>Max tokens<input id="maxTokens" type="number" min="1" max="4096" value="256"></label><button type="submit">Send request</button></div></form>
+      <div id="chatResult" class="result hidden"><div class="result-head"><strong>Gateway response</strong><button id="copyResponse" class="secondary" type="button">Copy</button></div><pre id="responseText"></pre><p id="responseMeta" class="hint"></p></div>
+    </section>
+    <footer>RentOk LLM Gateway · Minimal admin and testing console</footer>
+  </main>
+</body></html>
