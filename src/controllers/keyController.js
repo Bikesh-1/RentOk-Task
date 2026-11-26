@@ -5,7 +5,6 @@ import { parsePositiveBudget } from "../utils/validation.js";
 export const createApiKey = async (req, res, next) => {
   try {
     const { name } = req.body ?? {};
-    // Accept both names for compatibility with API clients and earlier examples.
     const budgetInput = req.body?.budgetLimit ?? req.body?.budget;
     const budget = parsePositiveBudget(budgetInput);
 
