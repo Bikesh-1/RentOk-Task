@@ -35,7 +35,7 @@ The start command is `npm start`. Render supplies the `PORT` environment variabl
 After Render gives the service a public URL, set it as `BASE_URL`:
 
 ```bash
-BASE_URL=https://<your-render-service>.onrender.com
+BASE_URL=https://rentok-llm-gateway-u6fe.onrender.com/
 ```
 
 Health check:

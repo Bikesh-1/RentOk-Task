@@ -2,7 +2,7 @@
 
 ## 1. What I built
 
-RentOk is a small, non-streaming HTTP gateway that accepts OpenAI-style chat completion requests and forwards them to an LLM provider. Callers authenticate with gateway-issued virtual API keys instead of receiving provider credentials. The gateway applies a per-key USD budget reservation, records usage and estimated spend in PostgreSQL, and can fall back from OpenAI to Gemini when the Gemini key is configured. The service is built with Node.js, Express, Prisma, and PostgreSQL.
+RentOk task is a small, non-streaming HTTP gateway that accepts OpenAI-style chat completion requests and forwards them to an LLM provider. Callers authenticate with gateway-issued virtual API keys instead of receiving provider credentials. The gateway applies a per-key USD budget reservation, records usage and estimated spend in PostgreSQL, and can fall back from OpenAI to Gemini when the Gemini key is configured. The service is built with Node.js, Express, Prisma, and PostgreSQL.
 
 ## 2. Moving parts and request lifecycle
 
